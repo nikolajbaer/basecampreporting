@@ -404,6 +404,10 @@ class Basecamp(object):
         path = '/todos/delete_list/%u' % list_id
         return self._request(path)
 
+    def todo_lists_by_party(self,party_id):
+        path = '/todo_lists.xml?responsible_party=%u' % party_id
+        return self._request(path)
+
     # Items
 
     def create_todo_item(self, list_id, content, party_id=None, notify=False):

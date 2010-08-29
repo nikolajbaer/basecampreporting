@@ -313,6 +313,11 @@ class TimeEntry(BasecampObject):
     def __init__(self, node):
         self.set_initial_values(node)
 
+class ToDoItem(BasecampObject):
+    '''Represents a ToDo Item in Basecamp'''
+    def __init__(self, node):
+        self.set_initial_values(node)
+
 class Person(BasecampObject):
     '''Represents a Person in Basecamp'''
     def __init__(self, node):
