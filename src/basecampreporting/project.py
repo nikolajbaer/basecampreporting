@@ -323,6 +323,11 @@ class Person(BasecampObject):
     def __init__(self, node):
         self.set_initial_values(node)
 
+class Company(BasecampObject):
+    '''Represents a Company in Basecamp'''
+    def __init__(self, node):
+        self.set_initial_values(node)
+
 if __name__ == "__main__":
     from basecampreporting.tests import *
     main()
