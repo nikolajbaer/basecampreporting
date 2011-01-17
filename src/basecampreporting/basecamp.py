@@ -55,6 +55,7 @@ __date__ = '2006-05-21'
 
 import base64
 import urllib2
+from urllib import urlencode
 
 from basecampreporting.etree import ET
 
@@ -564,3 +565,16 @@ class Basecamp(object):
         """
         path = '/milestones/delete/%u' % milestone_id
         return self._request(path)
+
+    def time_report(self,start_date,end_date,subject_id,todo_item_id=None,project_id=None):
+        """Returns a comprehensive time report per the specified paremeters"""
+        params={"from":start_date.strftime("%Y%m%d"),
+                "to":end_date.strftime("%Y%m%d"),
+                "subject_id":subject_id,}
+        if todo_item_id:
+            params["todo_item_id"]=todo_item_id
+        if project_id:
+            params["project_id"]=project_id
+        path = '/time_entries/report.xml?%s'%urlencode(params)
+        return self._request(path)
+
