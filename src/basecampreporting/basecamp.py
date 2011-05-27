@@ -566,11 +566,12 @@ class Basecamp(object):
         path = '/milestones/delete/%u' % milestone_id
         return self._request(path)
 
-    def time_report(self,start_date,end_date,subject_id,todo_item_id=None,project_id=None):
+    def time_report(self,start_date,end_date,subject_id=None,todo_item_id=None,project_id=None):
         """Returns a comprehensive time report per the specified paremeters"""
         params={"from":start_date.strftime("%Y%m%d"),
-                "to":end_date.strftime("%Y%m%d"),
-                "subject_id":subject_id,}
+                "to":end_date.strftime("%Y%m%d"),}
+        if subject_id:
+            params["subject_id"] = subject_id,
         if todo_item_id:
             params["todo_item_id"]=todo_item_id
         if project_id:
