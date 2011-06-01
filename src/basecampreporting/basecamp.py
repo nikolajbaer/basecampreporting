@@ -571,7 +571,7 @@ class Basecamp(object):
         params={"from":start_date.strftime("%Y%m%d"),
                 "to":end_date.strftime("%Y%m%d"),}
         if subject_id:
-            params["subject_id"] = subject_id,
+            params["subject_id"] = subject_id
         if todo_item_id:
             params["todo_item_id"]=todo_item_id
         if project_id:
