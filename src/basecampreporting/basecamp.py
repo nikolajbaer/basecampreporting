@@ -88,7 +88,7 @@ class Basecamp(object):
     def _request(self, path, data=None):
         if hasattr(data, 'findall'):
             data = ET.tostring(data)
-        print "***Sending***\n",data
+        #print "***Sending***\n",data
         #req = urllib2.Request(url=self.baseURL + path, data=data)
         #print req.get_method(),req.get_full_url(),req.header_items()
         #return self.opener.open(req).read()
@@ -96,7 +96,7 @@ class Basecamp(object):
             r = requests.post(self.baseURL + path,data=data,headers=dict(self.headers),auth=(self.username,self.password),allow_redirects=True)
         else:
             r = requests.get(self.baseURL + path,headers=dict(self.headers),auth=(self.username,self.password))
-        print "received ",r.status_code,'"%s"'%r.text
+        #print "received ",r.status_code,'"%s"'%r.text
         return r
 
     # ---------------------------------------------------------------- #
