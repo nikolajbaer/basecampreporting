@@ -54,7 +54,8 @@ __date__ = '2006-05-21'
 
 
 import base64
-import urllib2
+#import urllib2
+import requests
 from urllib import urlencode
 
 from basecampreporting.etree import ET
@@ -67,25 +68,36 @@ class Basecamp(object):
         if self.baseURL[-1] == '/':
             self.baseURL = self.baseURL[:-1]
 
-        self.opener = urllib2.build_opener()
+        #self.opener = urllib2.build_opener()
 
-        self.auth_string = '%s:%s' % (username, password)
-        self.encoded_auth_string = base64.encodestring(self.auth_string)
+        #self.auth_string = '%s:%s' % (username, password)
+        self.username = username
+        self.password = password
+        #self.encoded_auth_string = base64.encodestring(self.auth_string)
 
         #Python 2.5, at least on Ubuntu is adding a newline when encoding,
         #which Basecamp chokes on and returns an HTTP 400
-        self.encoded_auth_string = self.encoded_auth_string.replace('\n', '')
+        #self.encoded_auth_string = self.encoded_auth_string.replace('\n', '')
         self.headers = [
             ('Content-Type', 'application/xml'),
             ('Accept', 'application/xml'),
-            ('Authorization', 'Basic %s' % self.encoded_auth_string), ]
-        self.opener.addheaders = self.headers
+        ]
+        #('Authorization', 'Basic %s' % self.encoded_auth_string), ]
+        #self.opener.addheaders = self.headers
 
     def _request(self, path, data=None):
         if hasattr(data, 'findall'):
             data = ET.tostring(data)
-        req = urllib2.Request(url=self.baseURL + path, data=data)
-        return self.opener.open(req).read()
+        print "***Sending***\n",data
+        #req = urllib2.Request(url=self.baseURL + path, data=data)
+        #print req.get_method(),req.get_full_url(),req.header_items()
+        #return self.opener.open(req).read()
+        if data:
+            r = requests.post(self.baseURL + path,data=data,headers=dict(self.headers),auth=(self.username,self.password))
+        else:
+            r = requests.get(self.baseURL + path,headers=dict(self.headers),auth=(self.username,self.password))
+        print "received ",r.status_code
+        return r.text
 
     # ---------------------------------------------------------------- #
     # General
@@ -349,19 +361,18 @@ class Basecamp(object):
         explicitly, or by giving it a list template id to base the new list
         off of.
         """
-        path = '/projects/%u/todos/create_list' % project_id
-        req = ET.Element('request')
+        path = '/projects/%u/todo_lists.xml' % project_id
+        req = ET.Element('todo-list')
         if milestone_id is not None:
-            ET.SubElement('milestone-id').text = str(milestone_id)
+            ET.SubElement(req,'milestone-id').text = str(milestone_id)
         if private is not None:
-            ET.SubElement('private').text = str(bool(private)).lower()
-        ET.SubElement('tracked').text = str(bool(tracked)).lower()
+            ET.SubElement(req,'private',type="boolean").text = str(bool(private)).lower()
+        ET.SubElement(req,'tracked',type="boolean").text = str(bool(tracked)).lower()
         if name is not None:
-            ET.SubElement('name').text = str(name)
-            ET.SubElement('description').text = str(description)
+            ET.SubElement(req,'name').text = str(name)
+            ET.SubElement(req,'description').text = str(description)
         if template_id is not None:
-            ET.SubElement('use-template').text = 'true'
-            ET.SubElement('template-id').text = str(int(template_id))
+            ET.SubElement(req,'todo-list-template-id').text = str(int(template_id))
         return self._request(path, req)
 
     def update_todo_list(self, list_id, name, description, milestone_id=None,
@@ -371,7 +382,7 @@ class Basecamp(object):
         """
         path = '/todos/update_list/%u' % list_id
         req = ET.Element('request')
-        list_ = ET.SubElement('list')
+        list_ = req
         ET.SubElement(list_, 'name').text = str(name)
         ET.SubElement(list_, 'description').text = str(description)
         if milestone_id is not None:
@@ -421,8 +432,8 @@ class Basecamp(object):
         notify key to indicate whether an email should be sent to that person
         to tell them about the assignment.
         """
-        path = '/todos/create_item/%u' % list_id
-        req = ET.Element('request')
+        path = '/todo_lists/%u/todo_items.xml' % list_id
+        req = ET.Element('todo-item')
         ET.SubElement(req, 'content').text = str(content)
         if party_id is not None:
             ET.SubElement(req, 'responsible-party').text = str(party_id)
