@@ -82,7 +82,7 @@ class Project(BasecampObject):
                           people = {}, persons = {} )
 
     def _get_project_info(self):
-        project_xml = self.bc._request("/projects/%s.xml" % self.id)
+        project_xml = self.bc._request("/projects/%s.xml" % self.id).text
         node = ET.fromstring(project_xml)
         self._name = node.findtext("name")
         self._status = node.findtext("status")

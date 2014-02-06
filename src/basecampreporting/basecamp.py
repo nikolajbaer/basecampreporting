@@ -93,11 +93,11 @@ class Basecamp(object):
         #print req.get_method(),req.get_full_url(),req.header_items()
         #return self.opener.open(req).read()
         if data:
-            r = requests.post(self.baseURL + path,data=data,headers=dict(self.headers),auth=(self.username,self.password))
+            r = requests.post(self.baseURL + path,data=data,headers=dict(self.headers),auth=(self.username,self.password),allow_redirects=True)
         else:
             r = requests.get(self.baseURL + path,headers=dict(self.headers),auth=(self.username,self.password))
-        print "received ",r.status_code
-        return r.text
+        print "received ",r.status_code,'"%s"'%r.text
+        return r
 
     # ---------------------------------------------------------------- #
     # General
@@ -437,7 +437,7 @@ class Basecamp(object):
         ET.SubElement(req, 'content').text = str(content)
         if party_id is not None:
             ET.SubElement(req, 'responsible-party').text = str(party_id)
-            ET.SubElement(req, 'notify').text = str(bool(notify)).lower()
+            ET.SubElement(req, 'notify', type="boolean").text = str(bool(notify)).lower()
         return self._request(path, req)
 
     def update_todo_item(self, item_id, content, party_id=None, notify=False):
