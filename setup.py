@@ -19,7 +19,7 @@ setup(
     packages = find_packages('src'),
     package_dir = {'': 'src'},
     
-    install_requires = ['setuptools', 'simplejson', 'elementtree'],
+    install_requires = ['setuptools', 'simplejson'],#, 'elementtree'],
 
     classifiers = [
         'Development Status :: 4 - Beta',
